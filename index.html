@@ -19,13 +19,6 @@ body {
   box-sizing:border-box;
 }
 
-.header {
-  display:flex;
-  justify-content:space-between;
-  align-items:flex-start;
-  margin-bottom:10mm;
-}
-
 h1 {
   color:#003366;
 }
@@ -50,8 +43,8 @@ input, select {
 
 .box {
   border:1px solid #ddd;
-  padding:8mm;
-  margin-bottom:10mm;
+  padding:6mm;
+  margin-bottom:8mm;
 }
 
 .result {
@@ -77,35 +70,59 @@ button {
 }
 
 .footer {
-  margin-top:15mm;
+  margin-top:10mm;
   font-size:12px;
   color:#555;
 }
 
+/* ✅ PRINT FIX */
 @media print {
-  body {background:white;}
-  .page {padding:0;}
-  button {display:none;}
-  input, select {
-    border:none;
+  body {
+    background:white;
+    margin:0;
   }
-  @page {size:A4; margin:25mm;}
+
+  .page {
+    width:auto;
+    margin:0;
+    padding:10mm;
+  }
+
+  button {
+    display:none;
+  }
+
+  input, select {
+    border:1px solid #000;
+    padding:3px;
+  }
+
+  .box {
+    page-break-inside: avoid;
+    margin-bottom:6mm;
+  }
+
+  h1 {
+    margin-top:0;
+  }
+
+  @page {
+    size:A4;
+    margin:12mm;
+  }
 }
 </style>
 
 </head>
+
 <body>
 
 <div class="page">
 
-<div class="header">
-<div>
 <h1>Ventilasjonsberegning</h1>
 <p class="subtitle">
 Dette skjemaet benyttes til dokumentasjon av luftmengde i forbindelse med støtteordning fra Enova.
 </p>
-</div>
-</div>
 
 <div class="box">
 <h3>Opplysninger</h3>
@@ -165,8 +182,10 @@ const resultat = document.getElementById("resultat");
 const tekst = document.getElementById("tekst");
 const dato = document.getElementById("dato");
 
-// Auto data
+// Auto dato
 dato.value = new Date().toISOString().split("T")[0];
+
+// Sett produktleverandør
 document.getElementById("produktleverandor").value = "LUNOS";
 
 // Format
