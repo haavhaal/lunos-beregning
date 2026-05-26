@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<title>Ventilasjonsberegning – LUNOS</title>
+
+<style>
+body {
+  font-family: Calibri, Arial, sans-serif;
+  margin:0;
+  background:#f5f5f5;
+}
+
+.page {
+  width:210mm;
+  margin:auto;
+  background:white;
+  padding:25mm;
+  box-sizing:border-box;
+}
+
+.header {
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  margin-bottom:10mm;
+}
+
+h1 {
+  color:#003366;
+}
+
+.subtitle {
+  margin-top:0;
+  color:#333;
+}
+
+.grid {
+  display:grid;
+  grid-template-columns:1fr 70mm;
+  gap:6mm 10mm;
+}
+
+input, select {
+  width:100%;
+  padding:5px;
+  border:1px solid #ccc;
+  box-sizing:border-box;
+}
+
+.box {
+  border:1px solid #ddd;
+  padding:8mm;
+  margin-bottom:10mm;
+}
+
+.result {
+  margin-top:6mm;
+  font-weight:bold;
+}
+
+.uttalelse {
+  border:1px solid #ccc;
+  padding:8px;
+  white-space:pre-line;
+  line-height:1.4;
+}
+
+button {
+  background:#003366;
+  color:white;
+  border:none;
+  padding:10px 16px;
+  font-size:14px;
+  cursor:pointer;
+  margin-top:10px;
+}
+
+.footer {
+  margin-top:15mm;
+  font-size:12px;
+  color:#555;
+}
+
+@media print {
+  body {background:white;}
+  .page {padding:0;}
+  button {display:none;}
+  input, select {
+    border:none;
+  }
+  @page {size:A4; margin:25mm;}
+}
+</style>
+
+</head>
+<body>
+
+<div class="page">
+
+<div class="header">
+<div>
+<h1>Ventilasjonsberegning</h1>
+<p class="subtitle">
+Dette skjemaet benyttes til dokumentasjon av luftmengde i forbindelse med støtteordning fra Enova.
+</p>
+</div>
+</div>
+
+<div class="box">
+<h3>Opplysninger</h3>
+
+<div class="grid">
+<label>Utførende leverandør</label><input id="leverandor">
+<label>Organisasjonsnummer</label><input id="orgnr">
+<label>Boligeier</label><input id="boligeier">
+<label>Adresse</label><input id="adresse">
+<label>Dato</label><input id="dato" type="date">
+<label>Produktleverandør</label><input id="produktleverandor">
+</div>
+</div>
+
+<div class="box">
+<h3>Beregning</h3>
+
+<div class="grid">
+<label>Antall ventilatorer</label>
+<select id="antall">
+<option>1</option><option>2</option><option>3</option><option>4</option>
+<option>5</option><option>6</option><option>7</option><option>8</option>
+<option>9</option><option>10</option><option>11</option><option>12</option>
+<option>13</option><option>14</option><option>15</option><option>16</option>
+</select>
+
+<label>Totalt luftskifte (m³/t)</label><input id="luft" readonly>
+<label>BRA (m²)</label><input id="bra" value="20">
+</div>
+
+<p class="result">
+Luftskifte per m²: <span id="resultat"></span>
+</p>
+</div>
+
+<div class="box">
+<h3>Uttalelse</h3>
+
+<div id="tekst" class="uttalelse"></div>
+
+<button onclick="window.print()">
+Skriv ut / lagre som PDF
+</button>
+</div>
+
+<p class="footer">
+Dokumentet er generert av LUNOS ventilasjonssystemer.
+</p>
+
+</div>
+
+<script>
+const antall = document.getElementById("antall");
+const luft = document.getElementById("luft");
+const bra = document.getElementById("bra");
+const resultat = document.getElementById("resultat");
+const tekst = document.getElementById("tekst");
+const dato = document.getElementById("dato");
+
+// Auto data
+dato.value = new Date().toISOString().split("T")[0];
+document.getElementById("produktleverandor").value = "LUNOS";
+
+// Format
+function f(n){
+  return n.toFixed(2).replace(".",",");
+}
+
+// Beregning
+function beregn(){
+  let ant = parseInt(antall.value,10);
+  let luftVerdi = ant * 15;
+  let braVerdi = parseFloat(bra.value.replace(",","."));
+
+  luft.value = luftVerdi;
+
+  if(!braVerdi) return;
+
+  let res = luftVerdi / braVerdi;
+
+  resultat.textContent = f(res);
+
+  tekst.textContent =
+`Denne beregningen gjelder ventilasjon fra LUNOS.
+
+Med ${ant} ventilatorer er totalt luftskifte beregnet til ${luftVerdi} m³/t.
+
+Ved et BRA på ${braVerdi} m² gir dette et luftskifte på ${f(res)} m³/t per m².
+
+Beregningen er basert på normal drift av ventilasjonssystemet.
+Systemet har mulighet for intensivlufting med økt kapasitet på opptil 100 %.
+Nattsenking er mulig.`;
+}
+
+antall.addEventListener("change", beregn);
+bra.addEventListener("input", beregn);
+
+beregn();
+</script>
+
+</body>
+</html>
